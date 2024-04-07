@@ -2,7 +2,7 @@ import torch
 import random
 import numpy as np
 
-# seed now to be save and overwrite later
+# Seed now to be save and overwrite later
 np.random.seed(1)
 random.seed(1)
 torch.manual_seed(1)
@@ -24,7 +24,6 @@ from hv import HyperVolume
 
 from methods import HypernetMethod, ParetoMTLMethod, SingleTaskMethod, COSMOSMethod, MGDAMethod, UniformScalingMethod
 from scores import from_objectives
-
 
 def method_from_name(method, **kwargs):
     if method == 'ParetoMTL':

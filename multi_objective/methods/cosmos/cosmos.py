@@ -18,7 +18,7 @@ class Upsampler(nn.Module):
         super().__init__()
 
         if len(input_dim) == 1:
-            # tabular data
+            # Tabular data
             self.tabular = True
         elif len(input_dim) == 3:
             # image data
@@ -56,7 +56,6 @@ class Upsampler(nn.Module):
             return self.child_model.private_params()
         else:
             return []
-
 
 
 class COSMOSMethod(BaseMethod):

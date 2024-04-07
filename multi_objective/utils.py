@@ -7,6 +7,7 @@ import collections
 
 from datetime import datetime
 
+
 from loaders import adult_loader, compas_loader, multi_mnist_loader, celeba_loader, credit_loader
 from models import FullyConnected, MultiLeNet, EfficientNet, ResNet
 
@@ -59,7 +60,7 @@ def circle_points(n, min_angle=0.1, max_angle=np.pi / 2 - 0.1, dim=2):
         y = np.sin(angles)
         return np.c_[x, y]
     elif dim == 3:
-        # Fibonacci sphere algorithm
+        # The Fibonacci sphere algorithm
         # https://stackoverflow.com/a/26127012
         points = []
         phi = np.pi * (3. - np.sqrt(5.))  # golden angle in radians

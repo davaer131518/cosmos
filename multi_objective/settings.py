@@ -2,7 +2,7 @@ import random
 # datsets override methods override generic
 
 #
-# datasets
+# datasetss
 #
 adult = dict(
     dataset='adult',
@@ -95,6 +95,7 @@ cosmos = dict(
     lamda=2,        # Default for multi-mnist
     alpha=1.2,      #
     scal_method='linear'
+
 )
 
 mgda = dict(
