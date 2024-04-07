@@ -237,7 +237,7 @@ def parse_args():
         settings.update(s.mgda)
     elif args.method == 'uniform':
         settings.update(s.uniform_scaling)
-    
+
     if args.dataset == 'mm':
         settings.update(s.multi_mnist)
     elif args.dataset == 'adult':

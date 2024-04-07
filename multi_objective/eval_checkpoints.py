@@ -15,7 +15,7 @@ import json
 import torch.utils.data as data
 
 import utils
-from main import parse_args, solver_from_name
+from main import parse_args, method_from_name
 from scores import from_objectives, mcr
 from objectives import from_name
 from hv import HyperVolume
@@ -133,7 +133,7 @@ def eval(settings):
     scores1 = from_objectives(objectives)
     scores2 = [mcr(o.label_name, o.logits_name) for o in objectives]
 
-    solver = solver_from_name(objectives=objectives, **settings)
+    solver = method_from_name(objectives=objectives, **settings)
 
     train_results = dict(settings=settings, num_parameters=utils.num_parameters(solver.model_params()))
     val_results = dict(settings=settings, num_parameters=utils.num_parameters(solver.model_params()))

@@ -1,4 +1,5 @@
 import torch
+import torch.functional as F
 import torch.nn as nn
 import numpy as np
 
@@ -30,7 +31,7 @@ class Upsampler(nn.Module):
                 nn.Upsample(input_dim[-2:])
             )
         else:
-            raise ValueError(f"Unknown dataset structure, expected 1 or 3 dimensions, got {dim}")
+            raise ValueError(f"Unknown dataset structure, expected 1 or 3 dimensions, got {input_dim}")
 
         self.child_model = child_model
 
@@ -60,7 +61,7 @@ class Upsampler(nn.Module):
 
 class COSMOSMethod(BaseMethod):
 
-    def __init__(self, objectives, alpha, lamda, dim, n_test_rays, **kwargs):
+    def __init__(self, objectives, alpha, lamda, dim, n_test_rays, scal_method, **kwargs):
         """
         Instanciate the cosmos solver.
 
@@ -76,6 +77,8 @@ class COSMOSMethod(BaseMethod):
         self.alpha = alpha
         self.n_test_rays = n_test_rays
         self.lamda = lamda
+        self.scal_method = scal_method
+        self.epsilion = 1e-4
 
         dim = list(dim)
         dim[0] = dim[0] + self.K
@@ -85,7 +88,32 @@ class COSMOSMethod(BaseMethod):
 
         self.n_params = num_parameters(self.model)
         print("Number of parameters: {}".format(self.n_params))
+        print(f"The used scalarization method is {self.scal_method}")
 
+    def linear_scalarization(self, batch, batch_alphas):
+        loss_total = None
+        task_losses = []
+        for  alpha, objective in zip(batch_alphas, self.objectives):
+            task_loss = objective(**batch)
+            loss_total = alpha * task_loss if not loss_total else loss_total + alpha * task_loss
+            task_losses.append(task_loss)
+
+        return task_losses, loss_total
+
+    def aug_chebyshev_scalarization(self, batch, batch_alphas):
+        task_losses = [objective(**batch) for objective in self.objectives]
+        max_weighted_loss = torch.max(torch.stack([alpha * loss for alpha, loss in zip(batch_alphas, task_losses)]))
+        sum_weighted_loss = torch.sum(torch.stack([alpha * loss for alpha, loss in zip(batch_alphas, task_losses)]))
+        loss_total = max_weighted_loss + self.epsilon * sum_weighted_loss
+        return task_losses, loss_total
+
+    def softmax_chebyshev_scalarization(self, batch, batch_alphas):
+        task_losses = [objective(**batch) for objective in self.objectives]
+        weighted_losses = torch.stack([alpha * loss for alpha, loss in zip(batch_alphas, task_losses)])
+        softmax_weighted_loss = torch.sum(F.softmax(weighted_losses, dim=0) * weighted_losses)
+        sum_weighted_loss = torch.sum(weighted_losses)
+        loss_total = softmax_weighted_loss + self.epsilon * sum_weighted_loss
+        return task_losses, loss_total
 
     def step(self, batch):
         # step 1: sample alphas
@@ -105,12 +133,15 @@ class COSMOSMethod(BaseMethod):
         self.model.zero_grad()
         logits = self.model(batch)
         batch.update(logits)
-        loss_total = None
-        task_losses = []
-        for a, objective in zip(batch['alpha'], self.objectives):
-            task_loss = objective(**batch)
-            loss_total = a * task_loss if not loss_total else loss_total + a * task_loss
-            task_losses.append(task_loss)
+
+        if self.scal_method == "linear":
+            task_losses, loss_total = self.linear_scalarization(batch, batch['alpha'])
+        elif self.scal_method == "aug_chebyshev":
+            task_losses, loss_total = self.aug_chebyshev_scalarization(batch, batch['alpha'])
+        elif self.scal_method == "softmax_chebyshev":
+            task_losses, loss_total = self.softmax_chebyshev_scalarization(batch, batch['alpha'])
+        else:
+            raise NotImplementedError(f"Scalarization method '{self.scal_method}' is not implemented.")
         
         cossim = torch.nn.functional.cosine_similarity(torch.stack(task_losses), batch['alpha'], dim=0)
         loss_total -= self.lamda * cossim

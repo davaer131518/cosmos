@@ -254,7 +254,6 @@ for dataset in datasets:
                     e = "epoch_{}".format(get_early_stop(val_run[s], key=stop_key[method]))
                     val_results = val_run[s][e]
                     test_results = test_run[s][e]
-
                     early_stop_epoch.append(int(e.replace('epoch_', '')))
                     val_scores.append(val_results['scores'])
                     test_scores.append(test_results['scores'])

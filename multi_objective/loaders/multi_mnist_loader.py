@@ -74,13 +74,6 @@ class MultiMNIST(torch.utils.data.Dataset):
 
 
 
-
-
-
-
-
-
-
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     
