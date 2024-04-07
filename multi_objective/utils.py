@@ -91,7 +91,6 @@ def num_parameters(params):
     model_parameters = filter(lambda p: p.requires_grad, params)
     return int(sum([np.prod(p.size()) for p in model_parameters]))
 
-
 def angle(grads):
     grads = flatten_grads(grads)
     return torch.cosine_similarity(grads[0], grads[1], dim=0)

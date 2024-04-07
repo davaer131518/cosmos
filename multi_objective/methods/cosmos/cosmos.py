@@ -9,7 +9,6 @@ from ..base import BaseMethod
 
 class Upsampler(nn.Module):
 
-
     def __init__(self, K, child_model, input_dim):
         """
         In case of tabular data: append the sampled rays to the data instances (no upsampling)

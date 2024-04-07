@@ -2,7 +2,7 @@ import random
 # datsets override methods override generic
 
 #
-# datasetss
+# Datasetss
 #
 adult = dict(
     dataset='adult',
