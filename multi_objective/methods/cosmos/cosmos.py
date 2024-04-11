@@ -1,5 +1,5 @@
 import torch
-import torch.functional as F
+import torch.nn.functional as F
 import torch.nn as nn
 import numpy as np
 
@@ -76,7 +76,7 @@ class COSMOSMethod(BaseMethod):
         self.n_test_rays = n_test_rays
         self.lamda = lamda
         self.scal_method = scal_method
-        self.epsilion = 1e-4
+        self.epsilon = 1e-4
 
         dim = list(dim)
         dim[0] = dim[0] + self.K

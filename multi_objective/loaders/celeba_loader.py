@@ -41,14 +41,15 @@ class CelebA(data.Dataset):
         self.label_file = self.root+"/Anno/list_attr_celeba.txt"
         label_map = {}
         with open(self.label_file, 'r') as l_file:
-            labels = l_file.read().split('\n')[2:-1]
+            labels = l_file.read().split('\n')
         for label_line in labels:
-            f_name = re.sub('jpg', 'png', label_line.split(' ')[0])
+            f_name = re.sub('jpg', 'jpg', label_line.split(' ')[0])
             label_txt = list(map(lambda x:int(x), re.sub('-1','0',label_line).split()[1:]))
             label_map[f_name]=label_txt
 
-        self.all_files = glob.glob(self.root+'/Img/img_align_celeba_png/*.png')
-        with open(root+'//Eval/list_eval_partition.txt', 'r') as f:
+        self.all_files = glob.glob(self.root+'/Img/img_align_celeba_png/*.jpg')
+        self.all_files = [i.replace('\\','/') for i in self.all_files]
+        with open(root+'/Eval/list_eval_partition.txt', 'r') as f:
             fl = f.read().split('\n')
             fl.pop()
             if 'train' in self.split:
@@ -57,8 +58,8 @@ class CelebA(data.Dataset):
                 selected_files =  list(filter(lambda x:x.split(' ')[1]=='1', fl))
             elif 'test' in self.split:
                 selected_files =  list(filter(lambda x:x.split(' ')[1]=='2', fl))
-            selected_file_names = list(map(lambda x:re.sub('jpg', 'png', x.split(' ')[0]), selected_files))
-        
+            selected_file_names = list(map(lambda x:re.sub('jpg', 'jpg', x.split(' ')[0]), selected_files))
+
         base_path = '/'.join(self.all_files[0].split('/')[:-1])
         self.files[self.split] = list(map(lambda x: '/'.join([base_path, x]), set(map(lambda x:x.split('/')[-1], self.all_files)).intersection(set(selected_file_names))))
         self.labels[self.split] = list(map(lambda x: label_map[x], set(map(lambda x:x.split('/')[-1], self.all_files)).intersection(set(selected_file_names))))
@@ -109,7 +110,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
 
-    dst = CelebA(split='val', task_ids=[22, 39])
+    dst = CelebA(split='val', task_ids=[16, 22])
     bs = 4
     trainloader = data.DataLoader(dst, batch_size=bs, num_workers=0)
 

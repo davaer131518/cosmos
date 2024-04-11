@@ -110,7 +110,7 @@ def evaluate(j, e, method, scores, data_loader, logdir, reference_point, split, 
 
 
 def main(settings):
-    print("start processig with settings", settings)
+    print("start processing with settings", settings)
     utils.set_seed(settings['seed'])
 
     global elapsed_time
@@ -242,7 +242,7 @@ def parse_args():
         settings.update(s.adult)
     elif args.dataset == 'mfm':
         settings.update(s.multi_fashion_mnist)
-    elif args.dataset == 'fm':
+    elif args.dataset == 'mf':
         settings.update(s.multi_fashion)
     elif args.dataset == 'credit':
         settings.update(s.credit)

@@ -94,7 +94,7 @@ cosmos = dict(
     method='cosmos',
     lamda=2,        # Default for multi-mnist
     alpha=1.2,      #
-    scal_method='linear'
+    scal_method='softmax_chebyshev'
 
 )
 
