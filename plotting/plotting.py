@@ -1,12 +1,18 @@
 import argparse
 import json
+import os.path
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from pathlib import Path
 import re
-from multi_objective.hv import HyperVolume
+import sys
+sys.path.append(os.path.abspath("..\cosmos"))
+sys.path.append(os.path.abspath("..\cosmos\multi_objective"))
+
+from cosmos.multi_objective.hv import HyperVolume
 
 
 #
@@ -128,25 +134,27 @@ def process_non_pareto_front(data_val, data_test):
 font_size = 12
 figsize=(14, 3.5)
 
-dirname = '../results_plot/results_final_paper'
+dirname = 'cosmos\\results\\'
 
-datasets = ['adult', 'compas', 'credit', 'multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
-methods = ['SingleTask', 'hyper_epo', 'hyper_ln', 'ParetoMTL',  'cosmos_ln']
+datasets = ['adult', 'compass', 'multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
+methods = ['SingleTask', 'hyper_epo', 'hyper_ln', 'ParetoMTL',  'cosmos_ln', 'cosmos_cheby', 'cosmos_cheby_soft']
 
-generating_pareto_front = ['cosmos_ln', 'hyper_ln', 'hyper_epo']
+generating_pareto_front = ['cosmos_ln',  'cosmos_cheby', 'cosmos_cheby_soft', 'hyper_ln', 'hyper_epo']
 
 stop_key = {
     'SingleTask': 'score', 
     'hyper_epo': 'hv', 
     'hyper_ln': 'hv', 
-    'cosmos_ln': 'hv', 
+    'cosmos_ln': 'hv',
+    'cosmos_cheby': 'hv',
+    'cosmos_cheby_soft': 'hv',
     'ParetoMTL': 'hv', 
 }
 
 early_stop = ['hyper_ln', 'hyper_epo', 'SingleTask', 'ParetoMTL']
 
 reference_points = {
-    'adult': [2, 2], 'compas': [2, 2], 'credit': [2, 2], 
+    'adult': [2, 2], 'compass': [2, 2], 'credit': [2, 2], 
     'multi_mnist': [2, 2], 'multi_fashion': [2, 2], 'multi_fashion_mnist': [2, 2],
 }
 
@@ -156,7 +164,9 @@ plt.tight_layout()
 markers = {
     'hyper_epo': '.', 
     'hyper_ln': 'x', 
-    'cosmos_ln': 'd', 
+    'cosmos_ln': 'd',
+    'cosmos_cheby': 'p',
+    'cosmos_cheby_soft': 'h',
     'cosmos_2_pf': 'd', 
     'ParetoMTL': '*'
 }
@@ -166,13 +176,15 @@ colors = {
     'hyper_epo': '#ff7f0e', 
     'hyper_ln': '#2ca02c',
     'cosmos_ln': '#d62728',
+    'cosmos_cheby': '#b52eb0',
+    'cosmos_cheby_soft': '#2eb552',
     'cosmos_2_pf': '#d62728',
     'ParetoMTL': '#9467bd', 
 }
 
 titles = {
     'adult': 'Adult',
-    'compas': 'Compass',
+    'compass': 'Compass',
     'credit': 'Default', 
     'multi_mnist': "Multi-MNIST", 
     'multi_fashion': 'Multi-Fashion',
@@ -181,7 +193,7 @@ titles = {
 
 ax_lables = {
     'adult': ('Binary Cross-Entropy Loss', 'DEO'),
-    'compas': ('Binary Cross-Entropy Loss', 'DEO'),
+    'compass': ('Binary Cross-Entropy Loss', 'DEO'),
     'credit': ('Binary Cross-Entropy Loss', 'DEO'), 
     'multi_mnist': ('Cross-Entropy Loss Task TL', 'Cross-Entropy Loss Task BR'), 
     'multi_fashion': ('Cross-Entropy Loss Task TL', 'Cross-Entropy Loss Task BR'), 
@@ -193,13 +205,15 @@ method_names = {
     'hyper_epo': 'PHN-EPO', 
     'hyper_ln': 'PHN-LS',
     'cosmos_ln': 'COSMOS',
+    'cosmos_cheby':'COS-CHEBY',
+    'cosmos_cheby_soft':'COS-CHEBY-SOFT',
     'ParetoMTL': 'ParetoMTL', 
 }
 
 limits_baselines = {
     # dataset: [left, right, bottom, top]
     'adult': [.3, .6, -0.01, .14],
-    'compas': [0, 1.5, -.01, .35],
+    'compass': [0, 1.5, -.01, .35],
     'credit': [.42, .65, -0.001, .017],
     'multi_mnist': [.24, .5, .3, .5], 
     'multi_fashion': [.45, .75, .47, .75], 
@@ -218,9 +232,10 @@ for dataset in datasets:
     results[dataset] = {}
     for method in methods:
         # ignore folders that start with underscore
-        val_file = list(sorted(p.glob(f'**/{method}/{dataset}/**/val*.json')))
-        test_file = list(sorted(p.glob(f'**/{method}/{dataset}/**/test*.json')))
-        train_file = list(sorted(p.glob(f'**/{method}/{dataset}/**/train*.json')))
+        val_file = list(sorted(p.glob(f'**\\{method}\\{dataset}\\**\\val*.json')))
+        test_file = list(sorted(p.glob(f'**\\{method}\\{dataset}\\**\\test*.json')))
+        train_file = list(sorted(p.glob(f'**\\{method}\\{dataset}\\**\\train*.json')))
+
 
         assert len(val_file) == len(test_file)
 
@@ -239,7 +254,7 @@ for dataset in datasets:
         result_i = {}
         if method in generating_pareto_front:
 
-            
+
             s = 'start_0'
             if isinstance(data_val, list):
                 result_i['num_parameters'] = data_val[0]['num_parameters']
@@ -315,7 +330,6 @@ for dataset in datasets:
 
         results[dataset][method] = result_i
 
-
 with open('results.json', 'w') as outfile:
     json.dump(results, outfile)
 
@@ -324,7 +338,7 @@ with open('results.json', 'w') as outfile:
 #
 
 def plot_row(datasets, methods, limits, prefix):
-    assert len(datasets) == 3
+    assert len(datasets) <= 3
     fig, axes = plt.subplots(1, 3, figsize=figsize)
     for j, dataset in enumerate(datasets):
         if dataset not in results:
@@ -350,7 +364,7 @@ def plot_row(datasets, methods, limits, prefix):
                     label="{}".format(method_names[method])
                 )
                 
-                if dataset == 'multi_fashion' and method == 'cosmos_ln' and prefix == 'cosmos':
+                if dataset == 'multi_fashion' and (method == 'cosmos_ln' or method=='cosmos_cheby_soft' or method=='cosmos_cheby') and prefix == 'cosmos':
                     axins = zoomed_inset_axes(ax, 7, loc='upper right')
                     axins.plot(
                         s[:, 0], 
@@ -381,10 +395,10 @@ def plot_row(datasets, methods, limits, prefix):
     plt.close(fig)
 
 
-datasets1 = ['adult', 'compas', 'credit']
-methods1 = ['hyper_epo', 'hyper_ln', 'ParetoMTL', 'cosmos_ln']
+datasets1 = ['adult', 'compass']
+methods1 = ['hyper_epo', 'hyper_ln', 'ParetoMTL', 'cosmos_ln', 'cosmos_cheby', 'cosmos_cheby_soft']
 datasets2 = ['multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
-methods2 = ['SingleTask', 'cosmos_ln']
+methods2 = ['SingleTask', 'cosmos_ln', 'cosmos_cheby', 'cosmos_cheby_soft']
 
 plot_row(datasets1, methods1, limits_baselines, prefix='baselines')
 plot_row(datasets2, methods1, limits_baselines, prefix='baselines')
@@ -406,6 +420,17 @@ def generate_table(datasets, methods, name):
                 & \\multicolumn{{3}}{{c}}{{\\bf {titles[dataset]}}} \\\\ \cmidrule{{2-4}}"""
         for method in methods:
             r = results[dataset][method]
+
+            if type( r['test_hv']) != list:
+                r['test_hv'] = [0.0, r['test_hv']]
+            if type(r['val_hv']) != list:
+                r['val_hv'] = [0.0, r['val_hv']]
+
+            if type(r['training_time']) != list:
+                r['training_time'] = [r['training_time']]
+            if 'num_parameters' not in r:
+                r['num_parameters'] = 1
+
             text += f"""
 {method_names[method]}    & {r['test_hv'][0]:.2f} $\pm$ {r['test_hv'][1]:.2f}        & {r['training_time'][0]:,.0f}          &  {r['num_parameters']//1000:,d}k \\\\ """
 
@@ -418,7 +443,7 @@ def generate_table(datasets, methods, name):
 
 
 
-datasets1 = ['adult', 'compas', 'credit']
+datasets1 = ['adult', 'compass']
 generate_table(datasets1, methods, name='fairness')
 
 datasets2 = ['multi_mnist', 'multi_fashion', 'multi_fashion_mnist']

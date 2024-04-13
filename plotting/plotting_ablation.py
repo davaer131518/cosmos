@@ -24,7 +24,7 @@ from plotting import (
 scenario = 'fair'
 
 if scenario == 'fair':
-    datasets = ['adult', 'compas', 'credit']
+    datasets = ['adult', 'compass']
     lambdas = [0, .01, .1]
 elif scenario == 'multi':
     datasets = ['multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
@@ -33,7 +33,7 @@ else:
     raise ValueError()
 
 alphas = [.1, .7, 1.2]
-methods = ['cosmos_ln']
+methods = ['cosmos_ln', 'cosmos_cheby', 'cosmos_cheby_soft']
 dirname = "../results_plot/results_ablation/"
 
 p = Path(dirname)
@@ -130,7 +130,7 @@ limits = {
 
 ax_lables = {
     'adult': ('Loss', 'DEO'),
-    'compas': ('Loss', 'DEO'),
+    'compass': ('Loss', 'DEO'),
     'credit': ('Loss', 'DEO'), 
     'multi_mnist': ('Loss Task TL', 'Loss Task BR'), 
     'multi_fashion': ('Loss Task TL', 'Loss Task BR'), 

@@ -6,7 +6,11 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from pathlib import Path
 import re
-from multi_objective.hv import HyperVolume
+import os
+import sys
+sys.path.append(os.path.abspath("..\cosmos"))
+sys.path.append(os.path.abspath("..\cosmos\multi_objective"))
+from cosmos.multi_objective.hv import HyperVolume
 
 from plotting import (
     font_size,
@@ -33,8 +37,8 @@ def adjust_lightness(color, amount=0.5):
     return colorsys.hls_to_rgb(c[0], max(0, min(1, amount * c[1])), c[2])
 
 
-datasets = ['adult', 'compas', 'credit', 'multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
-methods = ['cosmos_ln']
+datasets = ['adult', 'compass', 'multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
+methods = ['cosmos_cheby_soft', 'cosmos_ln', 'cosmos_cheby']
 
 p = Path(dirname)
 results = {}
@@ -43,10 +47,9 @@ for dataset in datasets:
     results[dataset] = {}
     for method in methods:
         # ignore folders that start with underscore
-        val_file = list(sorted(p.glob(f'**/{method}/{dataset}/[!_]*/val*.json')))
-        test_file = list(sorted(p.glob(f'**/{method}/{dataset}/[!_]*/test*.json')))
-        train_file = list(sorted(p.glob(f'**/{method}/{dataset}/[!_]*/train*.json')))
-
+        val_file = list(sorted(p.glob(f'**\\{method}\\{dataset}\\[!_]*\\val*.json')))
+        test_file = list(sorted(p.glob(f'**\\{method}\\{dataset}\\[!_]*\\test*.json')))
+        train_file = list(sorted(p.glob(f'**\\{method}\\{dataset}\\[!_]*\\train*.json')))
         assert len(val_file) == len(test_file)
 
         data_val = load_files(val_file)
@@ -65,8 +68,8 @@ for dataset in datasets:
         results[dataset][method] = {}
 
         s = 'start_0'
-        for e in data_val[0][s]:
-            if e not in data_test[0][s]:
+        for e in data_val[s]:
+            if e not in data_test[s]:
                 continue
             result_i = {}
             results[dataset][method][int(e.replace('epoch_', ''))] = {}
@@ -152,7 +155,7 @@ def plot_convergence(datasets, methods, epochs=None):
     plt.close(fig)
 
 datasets1 = ['multi_mnist', 'multi_fashion', 'multi_fashion_mnist']
-methods1 = ['cosmos_ln']
+methods1 = ['cosmos_ln', 'cosmos_cheby', 'cosmos_cheby_soft']
 
 epochs = [9, 19, 29, 39, 49]
 plot_convergence(datasets1, methods1, epochs)

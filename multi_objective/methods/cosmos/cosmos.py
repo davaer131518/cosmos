@@ -135,6 +135,7 @@ class COSMOSMethod(BaseMethod):
         if self.scal_method == "linear":
             task_losses, loss_total = self.linear_scalarization(batch, batch['alpha'])
         elif self.scal_method == "aug_chebyshev":
+
             task_losses, loss_total = self.aug_chebyshev_scalarization(batch, batch['alpha'])
         elif self.scal_method == "softmax_chebyshev":
             task_losses, loss_total = self.softmax_chebyshev_scalarization(batch, batch['alpha'])
