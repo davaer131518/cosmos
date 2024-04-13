@@ -1,0 +1,20 @@
+
+\toprule
+                & Hyper Vol. & Time (Sec) & \# Params. \\ \midrule
+                & \multicolumn{3}{c}{\bf Adult} \\ \cmidrule{2-4}
+Single Task    & 0.00 $\pm$ 3.34        & 139          &  0k \\ 
+PHN-EPO    & 0.00 $\pm$ 3.34        & 125          &  716k \\ 
+PHN-LS    & 0.00 $\pm$ 3.34        & 83          &  716k \\ 
+ParetoMTL    & 0.00 $\pm$ 2.93        & 951          &  0k \\ 
+COSMOS    & 0.00 $\pm$ 3.34        & 60          &  7k \\ 
+COS-CHEBY    & 0.00 $\pm$ 3.33        & 62          &  7k \\ 
+COS-CHEBY-SOFT    & 0.00 $\pm$ 3.34        & 60          &  7k \\ 
+                & \multicolumn{3}{c}{\bf Compass} \\ \cmidrule{2-4}
+Single Task    & 0.00 $\pm$ 3.80        & 114          &  0k \\ 
+PHN-EPO    & 0.00 $\pm$ 3.71        & 50          &  304k \\ 
+PHN-LS    & 0.00 $\pm$ 3.70        & 44          &  304k \\ 
+ParetoMTL    & 0.00 $\pm$ 2.03        & 467          &  0k \\ 
+COSMOS    & 0.00 $\pm$ 3.73        & 80          &  2k \\ 
+COS-CHEBY    & 0.00 $\pm$ 3.72        & 82          &  2k \\ 
+COS-CHEBY-SOFT    & 0.00 $\pm$ 3.73        & 81          &  2k \\ 
+\bottomrule

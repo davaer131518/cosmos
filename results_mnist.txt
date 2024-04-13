@@ -1,0 +1,28 @@
+
+\toprule
+                & Hyper Vol. & Time (Sec) & \# Params. \\ \midrule
+                & \multicolumn{3}{c}{\bf Multi-MNIST} \\ \cmidrule{2-4}
+Single Task    & 0.00 $\pm$ 2.88        & 645          &  0k \\ 
+PHN-EPO    & 0.00 $\pm$ 2.88        & 2,370          &  3,243k \\ 
+PHN-LS    & 0.00 $\pm$ 2.87        & 1,002          &  3,243k \\ 
+ParetoMTL    & 0.00 $\pm$ 2.91        & 5,781          &  0k \\ 
+COSMOS    & 0.00 $\pm$ 2.95        & 549          &  43k \\ 
+COS-CHEBY    & 0.00 $\pm$ 2.94        & 675          &  43k \\ 
+COS-CHEBY-SOFT    & 0.00 $\pm$ 2.94        & 682          &  43k \\ 
+                & \multicolumn{3}{c}{\bf Multi-Fashion} \\ \cmidrule{2-4}
+Single Task    & 0.00 $\pm$ 2.21        & 641          &  0k \\ 
+PHN-EPO    & 0.00 $\pm$ 2.19        & 1,964          &  3,243k \\ 
+PHN-LS    & 0.00 $\pm$ 2.20        & 981          &  3,243k \\ 
+ParetoMTL    & 0.00 $\pm$ 2.26        & 5,775          &  0k \\ 
+COSMOS    & 0.00 $\pm$ 2.31        & 422          &  43k \\ 
+COS-CHEBY    & 0.00 $\pm$ 2.30        & 664          &  43k \\ 
+COS-CHEBY-SOFT    & 0.00 $\pm$ 2.29        & 679          &  43k \\ 
+                & \multicolumn{3}{c}{\bf Multi-Fashion+MNIST} \\ \cmidrule{2-4}
+Single Task    & 0.00 $\pm$ 2.78        & 695          &  0k \\ 
+PHN-EPO    & 0.00 $\pm$ 2.81        & 2,074          &  3,243k \\ 
+PHN-LS    & 0.00 $\pm$ 2.76        & 1,033          &  3,243k \\ 
+ParetoMTL    & 0.00 $\pm$ 2.75        & 5,980          &  0k \\ 
+COSMOS    & 0.00 $\pm$ 2.83        & 752          &  43k \\ 
+COS-CHEBY    & 0.00 $\pm$ 2.80        & 712          &  43k \\ 
+COS-CHEBY-SOFT    & 0.00 $\pm$ 2.84        & 702          &  43k \\ 
+\bottomrule
